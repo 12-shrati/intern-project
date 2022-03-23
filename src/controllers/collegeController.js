@@ -48,7 +48,7 @@ const createCollege = async function (req, res) {
 let getCollegeDetails = async function (req, res) {
   try {
 
-    let collegeName = req.query.name
+    let collegeName = req.query.collegeName
 
     if (!collegeName) {
       return res.status(400).send({ status: false, message: "name required" })
