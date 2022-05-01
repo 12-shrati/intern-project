@@ -1,13 +1,8 @@
 const internModel = require('../models/internModel')
 const collegeModel = require('../models/collegeModel')
-const mongoose = require('mongoose')
 
 const isValidRequestBody = function (data) {
   return Object.keys(data).length > 0
-}
-
-const isValidObjectId = function (ObjectId) {
-  return mongoose.Types.ObjectId.isValid(ObjectId)
 }
 
 const createIntern = async function (req, res) {
@@ -48,23 +43,18 @@ const createIntern = async function (req, res) {
       return res.status(400).send({ status: false, message: "enter valid mobile number " })
     }
 
-    if (!(data.collegeId)) {
-      return res.status(400).send({ status: false, msg: "collegeId required" })
+    if (!data.collegeName) {
+      return res.status(400).send({ status: false, message: "Enter valid collegeId" })
+    } 
+    let collegeDetails=await collegeModel.findOne({name:data.collegeName})
+    if (!(collegeDetails)) {
+      return res.status(404).send({ status: false, msg: "collegeName not found in the collection" })
     }
-    if (!isValidObjectId(data.collegeId)) {
-      return res.status(400).send({ status: false, message: "Enter valid collageId" })
-    }
-
-    let collageData = await collegeModel.findOne({ _id: data.collegeId })
-    if (!collageData) {
-      return res.status(404).send({ status: false, message: "collage id not found" })
-    }
-
-
-    let internData = await internModel.create(data)
-
-    return res.status(201).send({ status: true, data: { isDeleted: false, name: internData.name, email: internData.email, mobile: internData.mobile, collegeId: internData.collegeId } })
-
+    
+    let collegeId=collegeDetails._id
+    const internsData={name:data.name,email:data.email,mobile:data.mobile,collegeId:collegeId}
+    let internData = await internModel.create(internsData)
+    return res.status(201).send({ status: true, data: { isDeleted: false, name: internData.name, email: internData.email, mobile: internData.mobile, collegeId:collegeId } })
   }
   catch (error) {
     res.status(500).send({ msg: error.message })
