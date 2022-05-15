@@ -13,6 +13,8 @@ const createCollege = async function (req, res) {
     if (!isValidRequestBody(data)) {
       return res.status(400).send({ status: false, message: "enter valid parameters" })
     }
+
+
     if (!(data.name)) {
       return res.status(400).send({ status: false, msg: "name required" })
     }
@@ -24,16 +26,22 @@ const createCollege = async function (req, res) {
       return res.status(400).send({ status: false, message: "collage Name already present" })
     }
 
+
     if (!(data.fullName)) {
       return res.status(400).send({ status: false, msg: "fullname required" })
     }
     if (data.fullName.trim().length == 0) {
       return res.status(400).send({ status: false, msg: "Fill the fullname Properly" })
     }
+
+
     if (!(data.logoLink)) {
       return res.status(400).send({ status: false, msg: "logoLink required" })
     }
-
+    if (!(/(?:https?):\/\/(\w+:?\w*)?(\S+)(:\d+)?(\/|\/([\w#!:.?+=&%!\-\/]))?/.test(data.logoLink))) {
+      return res.status(400).send({ status: false, msg: "Provide valid logolink" })
+    }
+    
     let collegeData = await collegeModel.create(data)
 
     return res.status(201).send({ status: true, data: { name: collegeData.name, fullName: collegeData.fullName, logoLink: collegeData.logoLink, isDeleted: false } })
